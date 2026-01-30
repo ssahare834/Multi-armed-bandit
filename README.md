@@ -231,138 +231,40 @@ score(arm, context) = θ_a^T × context + α × sqrt(context^T × A_a^(-1) × co
                       exploitation         exploration (uncertainty)
 ```
 
-## 📁 Project Structure
+## 📁 System Structure
 
 ```
 bandit-news-recommender/
-├── app.py                    # Main Streamlit application
-├── bandit_algorithms.py      # Core algorithm implementations
-├── simulation.py             # Environment and simulation logic
-├── requirements.txt          # Python dependencies
-├── README.md                # This file
+├── app.py                    
+├── bandit_algorithms.py      
+├── simulation.py            
+├── requirements.txt          
+├── README.md                
 ├── notebooks/
-│   └── analysis.ipynb       # Jupyter notebook with math derivations
+│   └── analysis.ipynb       
 ├── docs/
-│   ├── blog_post.md         # Portfolio blog post
-│   └── algorithms.md        # Detailed algorithm explanations
+│   ├── blog_post.md         
+│   └── algorithms.md        
 └── tests/
-    └── test_algorithms.py   # Unit tests
+    └── test_algorithms.py   
 ```
-
-## 🧪 Running Tests
-
-```bash
-# Install test dependencies
-pip install pytest pytest-cov
-
-# Run tests
-pytest tests/
-
-# Run with coverage
-pytest --cov=. tests/
-```
-
-## 📊 Example Results
-
-After running 1000 rounds with all three algorithms:
-
-| Algorithm | Avg Reward | Avg CTR | Final Regret |
-|-----------|-----------|---------|--------------|
-| Thompson Sampling | 245.3 | 0.245 | 18.7 |
-| UCB | 238.1 | 0.238 | 24.3 |
-| Epsilon-Greedy | 221.4 | 0.221 | 41.2 |
-
-**Key Findings**:
-- Thompson Sampling achieves lowest regret
-- UCB provides consistent performance
-- Epsilon-Greedy is simplest but less efficient
-- All algorithms converge to near-optimal CTR
-
-## 🎓 Mathematical Background
-
-### Regret Bounds
-
-**Epsilon-Greedy**: Linear regret O(T)  
-**UCB**: Logarithmic regret O(log T)  
-**Thompson Sampling**: Logarithmic regret O(log T)
-
-### Why UCB Works
-
-The confidence radius ensures:
-```
-P(true_value ∈ [estimate - radius, estimate + radius]) ≥ 1 - 1/t^4
-```
-
-This guarantees we rarely make mistakes about which arm is best.
-
-### Thompson Sampling Intuition
-
-By sampling from the posterior, we:
-1. Explore uncertain arms (wide distributions)
-2. Exploit promising arms (high mean)
-3. Naturally balance both over time
-
-## 🚢 Deployment
-
-### Streamlit Cloud (Recommended)
-
-1. Push code to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your repository
-4. Deploy!
-
-### Heroku
-
-```bash
-# Create Procfile
-echo "web: streamlit run app.py --server.port=$PORT" > Procfile
-
-# Deploy
-heroku create your-app-name
-git push heroku main
-```
-
-### AWS/GCP
-
-See `docs/deployment.md` for detailed cloud deployment instructions.
 
 ## 🤝 Contributing
 
 Contributions welcome! Please:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch 
+3. Commit changes 
+4. Push to branch 
 5. Open a Pull Request
-
-## 📚 Further Reading
-
-### Papers
-- [A Survey of Multi-Armed Bandit Algorithms](https://arxiv.org/abs/1904.07272)
-- [Thompson Sampling: An Asymptotically Optimal Finite-Time Analysis](https://arxiv.org/abs/1209.3352)
-- [Using Confidence Bounds for Exploitation-Exploration Trade-offs](https://www.jmlr.org/papers/volume3/auer02a/auer02a.pdf)
-
-### Tutorials
-- [Bandit Algorithms for Website Optimization](https://www.oreilly.com/library/view/bandit-algorithms-for/9781449341565/)
-- [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html)
-
-### Real-World Applications
-- Netflix recommendations
-- Google ad placement
-- Clinical trials
-- A/B testing
-
-## 📄 License
-
-This project is licensed under the MIT License - see LICENSE file for details.
 
 ## 👤 Author
 
-**Your Name**
-- Portfolio: [yourportfolio.com](https://yourportfolio.com)
-- LinkedIn: [linkedin.com/in/yourname](https://linkedin.com/in/yourname)
-- GitHub: [@yourusername](https://github.com/yourusername)
+**Siddhant Sahare**
+- Portfolio: [yourportfolio.com]((https://siddhantsahare.netlify.app/))
+- LinkedIn: [linkedin.com/in/yourname]((https://www.linkedin.com/in/siddhant-sahare-91bb931a6/))
+
 
 ## 🙏 Acknowledgments
 
@@ -372,7 +274,7 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 ## 📧 Contact
 
-Questions? Reach out at your.email@example.com
+Questions? Reach out at ssahare834@gmail.com
 
 ---
 
