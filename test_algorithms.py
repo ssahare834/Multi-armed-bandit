@@ -1,6 +1,4 @@
-"""
-Unit tests for Multi-Armed Bandit algorithms
-"""
+
 
 import pytest
 import numpy as np
@@ -26,15 +24,15 @@ class TestEpsilonGreedy:
         """Test epsilon is properly bounded"""
         algo = EpsilonGreedy(n_arms=5, epsilon=0.1)
         
-        # Test valid epsilon
+       
         algo.set_epsilon(0.5)
         assert algo.epsilon == 0.5
         
-        # Test lower bound
+       
         algo.set_epsilon(-0.1)
         assert algo.epsilon == 0.0
         
-        # Test upper bound
+       
         algo.set_epsilon(1.5)
         assert algo.epsilon == 1.0
     
@@ -50,25 +48,25 @@ class TestEpsilonGreedy:
         """Test reward update mechanism"""
         algo = EpsilonGreedy(n_arms=3, epsilon=0.0)
         
-        # Update arm 0 with reward 1
+       
         algo.update(0, 1.0)
         assert algo.counts[0] == 1
         assert algo.values[0] == 1.0
         
-        # Update arm 0 again with reward 0
+       
         algo.update(0, 0.0)
         assert algo.counts[0] == 2
-        assert algo.values[0] == 0.5  # Average of 1 and 0
+        assert algo.values[0] == 0.5 
     
     def test_exploitation(self):
         """Test that algorithm exploits with epsilon=0"""
         algo = EpsilonGreedy(n_arms=3, epsilon=0.0)
         
-        # Manually set values
+
         algo.values = np.array([0.1, 0.5, 0.3])
         algo.counts = np.array([10, 10, 10])
         
-        # Should always select arm 1 (highest value)
+        
         selections = [algo.select_arm() for _ in range(100)]
         assert all(arm == 1 for arm in selections)
     
@@ -76,11 +74,11 @@ class TestEpsilonGreedy:
         """Test reset functionality"""
         algo = EpsilonGreedy(n_arms=3, epsilon=0.1)
         
-        # Make some updates
+        
         algo.update(0, 1.0)
         algo.update(1, 0.5)
         
-        # Reset
+        
         algo.reset()
         
         assert np.all(algo.counts == 0)
@@ -103,7 +101,7 @@ class TestUCB:
         """Test that UCB pulls each arm once initially"""
         algo = UCB(n_arms=5, c=2.0)
         
-        # First 5 selections should be each arm once
+       
         selected_arms = set()
         for _ in range(5):
             arm = algo.select_arm()
@@ -116,14 +114,14 @@ class TestUCB:
         """Test UCB value calculation"""
         algo = UCB(n_arms=3, c=2.0)
         
-        # Pull each arm once
+       
         for arm in range(3):
             algo.update(arm, 0.5)
         
-        # UCB values should be calculated correctly
+       
         ucb_values = algo.get_ucb_values()
         assert len(ucb_values) == 3
-        assert all(val >= 0.5 for val in ucb_values)  # All should be >= mean
+        assert all(val >= 0.5 for val in ucb_values)  
     
     def test_c_parameter(self):
         """Test setting c parameter"""
@@ -132,9 +130,9 @@ class TestUCB:
         algo.set_c(3.0)
         assert algo.c == 3.0
         
-        # Test lower bound
+        
         algo.set_c(0.05)
-        assert algo.c == 0.1  # Should be clamped to minimum
+        assert algo.c == 0.1  
 
 
 class TestThompsonSampling:
@@ -154,12 +152,12 @@ class TestThompsonSampling:
         """Test Beta distribution parameter updates"""
         algo = ThompsonSampling(n_arms=3)
         
-        # Update with success
+        
         algo.update(0, 1.0)
         assert algo.alpha[0] == 2.0
         assert algo.beta[0] == 1.0
         
-        # Update with failure
+        
         algo.update(0, 0.0)
         assert algo.alpha[0] == 2.0
         assert algo.beta[0] == 2.0
@@ -176,7 +174,7 @@ class TestThompsonSampling:
         """Test confidence interval calculation"""
         algo = ThompsonSampling(n_arms=3)
         
-        # Make some updates
+        
         for _ in range(10):
             algo.update(0, 1.0)
         for _ in range(10):
@@ -184,11 +182,11 @@ class TestThompsonSampling:
         
         lower, upper = algo.get_confidence_intervals()
         
-        # Arm 0 should have high CTR estimate
+        
         assert lower[0] > lower[1]
         assert upper[0] > upper[1]
         
-        # Intervals should be valid
+        
         assert all(0 <= l <= u <= 1 for l, u in zip(lower, upper))
 
 
@@ -262,19 +260,19 @@ class TestNewsEnvironment:
         """Test regret calculation"""
         env = NewsEnvironment(n_articles=5, seed=42)
         
-        # Always pull optimal arm
+     
         arm_history = [env.optimal_arm] * 100
         regret = env.calculate_regret(arm_history)
         
-        # Regret should be zero
+   
         assert np.all(regret == 0)
         
-        # Pull worst arm
+       
         worst_arm = np.argmin(env.true_ctrs)
         arm_history = [worst_arm] * 100
         regret = env.calculate_regret(arm_history)
         
-        # Regret should be positive and increasing
+        
         assert regret[-1] > 0
         assert np.all(np.diff(regret) >= 0)
 
