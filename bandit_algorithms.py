@@ -1,8 +1,3 @@
-"""
-Multi-Armed Bandit Algorithms Implementation
-Author: Portfolio Project
-Description: Core implementations of Epsilon-Greedy, UCB, and Thompson Sampling algorithms
-"""
 
 import numpy as np
 from typing import List, Tuple, Optional
@@ -20,8 +15,8 @@ class BanditAlgorithm(ABC):
             n_arms: Number of arms (articles/options)
         """
         self.n_arms = n_arms
-        self.counts = np.zeros(n_arms)  # Number of times each arm was pulled
-        self.values = np.zeros(n_arms)  # Estimated value (CTR) for each arm
+        self.counts = np.zeros(n_arms)  
+        self.values = np.zeros(n_arms)  
         self.total_pulls = 0
         self.total_reward = 0
         self.rewards_history = []
@@ -44,7 +39,7 @@ class BanditAlgorithm(ABC):
         self.total_pulls += 1
         self.total_reward += reward
         
-        # Incremental average update
+        
         n = self.counts[arm]
         value = self.values[arm]
         self.values[arm] = ((n - 1) / n) * value + (1 / n) * reward
@@ -96,11 +91,11 @@ class EpsilonGreedy(BanditAlgorithm):
     def select_arm(self, context: Optional[np.ndarray] = None) -> int:
         """Select arm using epsilon-greedy strategy"""
         if np.random.random() < self.epsilon:
-            # Explore: choose random arm
+            
             self.exploration_count += 1
             return np.random.randint(0, self.n_arms)
         else:
-            # Exploit: choose best arm
+           
             self.exploitation_count += 1
             # Break ties randomly
             max_value = np.max(self.values)
@@ -141,13 +136,13 @@ class UCB(BanditAlgorithm):
             if self.counts[arm] == 0:
                 return arm
         
-        # Calculate UCB for each arm
+        
         ucb_values = np.zeros(self.n_arms)
         for arm in range(self.n_arms):
             bonus = self.c * np.sqrt(np.log(self.total_pulls) / self.counts[arm])
             ucb_values[arm] = self.values[arm] + bonus
         
-        # Select arm with highest UCB
+       
         max_ucb = np.max(ucb_values)
         best_arms = np.where(ucb_values == max_ucb)[0]
         return np.random.choice(best_arms)
@@ -188,15 +183,15 @@ class ThompsonSampling(BanditAlgorithm):
             beta_prior: Prior failures (Beta distribution beta parameter)
         """
         super().__init__(n_arms)
-        self.alpha = np.ones(n_arms) * alpha_prior  # Successes + prior
-        self.beta = np.ones(n_arms) * beta_prior    # Failures + prior
+        self.alpha = np.ones(n_arms) * alpha_prior  
+        self.beta = np.ones(n_arms) * beta_prior    
     
     def select_arm(self, context: Optional[np.ndarray] = None) -> int:
         """Select arm using Thompson Sampling"""
-        # Sample from Beta distribution for each arm
+        
         samples = np.random.beta(self.alpha, self.beta)
         
-        # Select arm with highest sample
+        
         max_sample = np.max(samples)
         best_arms = np.where(samples == max_sample)[0]
         return np.random.choice(best_arms)
@@ -205,7 +200,7 @@ class ThompsonSampling(BanditAlgorithm):
         """Update Beta distribution parameters"""
         super().update(arm, reward)
         
-        # Update Beta parameters
+        
         if reward > 0:
             self.alpha[arm] += 1
         else:
@@ -263,10 +258,10 @@ class ContextualBandit:
         self.n_features = n_features
         self.alpha = alpha
         
-        # Initialize parameters for each arm
-        self.A = [np.identity(n_features) * alpha for _ in range(n_arms)]  # Design matrix
-        self.b = [np.zeros(n_features) for _ in range(n_arms)]  # Response vector
-        self.theta = [np.zeros(n_features) for _ in range(n_arms)]  # Parameter estimates
+        
+        self.A = [np.identity(n_features) * alpha for _ in range(n_arms)]  
+        self.b = [np.zeros(n_features) for _ in range(n_arms)]  
+        self.theta = [np.zeros(n_features) for _ in range(n_arms)]  
         
         self.total_pulls = 0
         self.total_reward = 0
@@ -285,28 +280,28 @@ class ContextualBandit:
         Returns:
             Selected arm index
         """
-        context = context.reshape(-1, 1)  # Column vector
+        context = context.reshape(-1, 1)  
         scores = np.zeros(self.n_arms)
         
         for arm in range(self.n_arms):
-            # Update theta estimate
+            
             try:
                 self.theta[arm] = np.linalg.solve(self.A[arm], self.b[arm])
             except np.linalg.LinAlgError:
                 self.theta[arm] = np.zeros(self.n_features)
             
-            # Calculate score
+            
             score = self.theta[arm].T @ context
             
             if use_ucb:
-                # Add uncertainty bonus (LinUCB)
+                
                 A_inv = np.linalg.inv(self.A[arm])
                 uncertainty = np.sqrt(context.T @ A_inv @ context)
                 score += self.alpha * uncertainty
             
             scores[arm] = score.item()
         
-        # Select arm with highest score
+        
         return np.argmax(scores)
     
     def update(self, arm: int, context: np.ndarray, reward: float):
@@ -320,11 +315,11 @@ class ContextualBandit:
         """
         context = context.reshape(-1, 1)
         
-        # Update design matrix and response vector
+       
         self.A[arm] += context @ context.T
         self.b[arm] += (reward * context).flatten()
         
-        # Update statistics
+       
         self.counts[arm] += 1
         self.total_pulls += 1
         self.total_reward += reward
