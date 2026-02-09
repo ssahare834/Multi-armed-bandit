@@ -1,8 +1,3 @@
-"""
-Interactive Multi-Armed Bandit News Recommendation System
-Streamlit Application for Portfolio Demonstration
-"""
-
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -12,14 +7,14 @@ from plotly.subplots import make_subplots
 import json
 from datetime import datetime
 
-# Import our modules
+
 from bandit_algorithms import (
     EpsilonGreedy, UCB, ThompsonSampling, ContextualBandit
 )
 from simulation import NewsEnvironment, run_simulation, compare_algorithms
 
 
-# Page configuration
+
 st.set_page_config(
     page_title="Multi-Armed Bandit News Recommender",
     page_icon="📰",
@@ -27,7 +22,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+
 st.markdown("""
 <style>
     .main-header {
@@ -108,7 +103,7 @@ def plot_ctr_evolution(results_dict):
             line=dict(width=2)
         ))
     
-    # Add optimal CTR line
+   
     optimal_ctr = st.session_state.environment.optimal_ctr
     fig.add_hline(
         y=optimal_ctr, 
@@ -168,7 +163,6 @@ def plot_value_estimates(algorithm, algorithm_name):
     
     fig = go.Figure()
     
-    # True CTRs
     fig.add_trace(go.Bar(
         x=list(range(len(true_ctrs))),
         y=true_ctrs,
@@ -176,7 +170,7 @@ def plot_value_estimates(algorithm, algorithm_name):
         marker_color='lightblue'
     ))
     
-    # Estimated values
+   
     fig.add_trace(go.Bar(
         x=list(range(len(estimated_values))),
         y=estimated_values,
@@ -232,7 +226,7 @@ def main():
     """Main Streamlit application"""
     initialize_session_state()
     
-    # Header
+    
     st.markdown('<p class="main-header">📰 Multi-Armed Bandit News Recommender</p>', 
                 unsafe_allow_html=True)
     st.markdown("""
@@ -241,18 +235,18 @@ def main():
     </p>
     """, unsafe_allow_html=True)
     
-    # Sidebar
+   
     with st.sidebar:
         st.header("⚙️ Configuration")
         
-        # Simulation parameters
+       
         st.subheader("Simulation Settings")
         n_rounds = st.slider("Number of Rounds", 100, 5000, 1000, 100)
         n_simulations = st.slider("Simulations for Comparison", 1, 20, 5)
         
         st.divider()
         
-        # Algorithm selection
+      
         st.subheader("Algorithm Selection")
         use_epsilon_greedy = st.checkbox("Epsilon-Greedy", value=True)
         use_ucb = st.checkbox("UCB", value=True)
@@ -260,7 +254,7 @@ def main():
         
         st.divider()
         
-        # Algorithm parameters
+        
         st.subheader("Algorithm Parameters")
         
         if use_epsilon_greedy:
@@ -273,10 +267,10 @@ def main():
         
         st.divider()
         
-        # Run simulation button
+       
         if st.button("🚀 Run Simulation", type="primary", use_container_width=True):
             with st.spinner("Running simulation..."):
-                # Select algorithms to run
+                
                 selected_algorithms = {}
                 if use_epsilon_greedy:
                     selected_algorithms['Epsilon-Greedy'] = st.session_state.algorithms['epsilon_greedy']
@@ -285,7 +279,7 @@ def main():
                 if use_thompson:
                     selected_algorithms['Thompson Sampling'] = st.session_state.algorithms['thompson']
                 
-                # Run simulations
+               
                 results = {}
                 for name, algo in selected_algorithms.items():
                     algo.reset()
@@ -297,7 +291,7 @@ def main():
                 
                 st.session_state.simulation_results = results
                 
-                # Run comparison
+                
                 st.session_state.comparison_results = compare_algorithms(
                     selected_algorithms,
                     st.session_state.environment,
@@ -309,7 +303,7 @@ def main():
         
         st.divider()
         
-        # Reset button
+        
         if st.button("🔄 Reset All", use_container_width=True):
             for algo in st.session_state.algorithms.values():
                 algo.reset()
@@ -317,7 +311,6 @@ def main():
             st.session_state.comparison_results = None
             st.rerun()
     
-    # Main content
     tabs = st.tabs([
         "📊 Overview", 
         "📈 Performance Comparison", 
@@ -326,7 +319,7 @@ def main():
         "📥 Export Results"
     ])
     
-    # Tab 1: Overview
+    
     with tabs[0]:
         st.header("System Overview")
         
@@ -354,7 +347,7 @@ def main():
         
         st.markdown("---")
         
-        # Explanation
+        
         with st.expander("ℹ️ About Multi-Armed Bandits"):
             st.markdown("""
             ### The Multi-Armed Bandit Problem
@@ -388,7 +381,7 @@ def main():
             - Goal: Maximize total clicks while learning user preferences
             """)
     
-    # Tab 2: Performance Comparison
+   
     with tabs[1]:
         st.header("Performance Comparison")
         
@@ -397,7 +390,7 @@ def main():
         else:
             results = st.session_state.simulation_results
             
-            # Comparison table
+            
             if st.session_state.comparison_results is not None:
                 st.subheader("📊 Summary Statistics")
                 st.dataframe(
@@ -413,7 +406,7 @@ def main():
             
             st.markdown("---")
             
-            # Regret plot
+         
             st.subheader("📉 Cumulative Regret")
             st.plotly_chart(plot_regret_comparison(results), use_container_width=True)
             
@@ -422,15 +415,14 @@ def main():
             Lower regret indicates better algorithm performance.
             """)
             
-            # CTR evolution plot
+           
             st.subheader("📈 CTR Evolution")
             st.plotly_chart(plot_ctr_evolution(results), use_container_width=True)
             
-            # Arm selection frequency
+           
             st.subheader("🎯 Arm Selection Frequency")
             st.plotly_chart(plot_arm_selection_frequency(results), use_container_width=True)
     
-    # Tab 3: Algorithm Details
     with tabs[2]:
         st.header("Algorithm Details")
         
@@ -440,7 +432,7 @@ def main():
             selected_algorithms = st.session_state.algorithms
             
             for name_key, algo in selected_algorithms.items():
-                # Map internal names to display names
+                
                 name_map = {
                     'epsilon_greedy': 'Epsilon-Greedy',
                     'ucb': 'UCB',
@@ -448,13 +440,13 @@ def main():
                 }
                 display_name = name_map.get(name_key, name_key)
                 
-                # Only show if algorithm was used in simulation
+                
                 if display_name not in st.session_state.simulation_results:
                     continue
                 
                 with st.expander(f"📊 {display_name}", expanded=True):
                     
-                    # Metrics
+                   
                     metrics = algo.get_metrics()
                     
                     col1, col2, col3, col4 = st.columns(4)
@@ -470,18 +462,17 @@ def main():
                             explore_ratio = algo.get_exploration_ratio()
                             st.metric("Exploration Ratio", f"{explore_ratio:.2%}")
                     
-                    # Value estimates plot
+                  
                     fig = plot_value_estimates(algo, display_name)
                     if fig:
                         st.plotly_chart(fig, use_container_width=True)
                     
-                    # Thompson Sampling specific
+                    
                     if isinstance(algo, ThompsonSampling):
                         fig = plot_thompson_sampling_distributions(algo)
                         if fig:
                             st.plotly_chart(fig, use_container_width=True)
                         
-                        # Confidence intervals
                         st.subheader("95% Confidence Intervals")
                         lower, upper = algo.get_confidence_intervals()
                         
@@ -500,13 +491,13 @@ def main():
                             'True CTR': '{:.3f}'
                         }), use_container_width=True)
     
-    # Tab 4: Articles Info
+    
     with tabs[3]:
         st.header("📰 News Articles Information")
         
         articles_df = st.session_state.environment.get_article_info()
         
-        # Highlight best article
+        
         def highlight_best(row):
             if row['Article ID'] == st.session_state.environment.optimal_arm:
                 return ['background-color: #90EE90'] * len(row)
@@ -520,7 +511,7 @@ def main():
         
         st.info("🟢 Green highlight indicates the best article (highest true CTR)")
         
-        # CTR distribution
+       
         st.subheader("CTR Distribution")
         fig = px.bar(
             articles_df,
@@ -532,7 +523,7 @@ def main():
         )
         st.plotly_chart(fig, use_container_width=True)
     
-    # Tab 5: Export Results
+    
     with tabs[4]:
         st.header("📥 Export Results")
         
@@ -541,7 +532,7 @@ def main():
         else:
             st.subheader("Download Simulation Data")
             
-            # Prepare export data
+            
             export_data = {
                 'timestamp': datetime.now().isoformat(),
                 'configuration': {
@@ -552,7 +543,7 @@ def main():
                 'results': {}
             }
             
-            # Add results for each algorithm
+            
             for name, results in st.session_state.simulation_results.items():
                 export_data['results'][name] = {
                     'total_reward': float(sum(results['rewards'])),
@@ -562,7 +553,7 @@ def main():
                     'ctr_history': [float(x) for x in results['ctr_evolution']]
                 }
             
-            # JSON export
+            
             col1, col2 = st.columns(2)
             
             with col1:
@@ -575,7 +566,7 @@ def main():
                 )
             
             with col2:
-                # CSV export of comparison
+                
                 if st.session_state.comparison_results is not None:
                     csv = st.session_state.comparison_results.to_csv(index=False)
                     st.download_button(
@@ -587,7 +578,7 @@ def main():
             
             st.markdown("---")
             
-            # Summary report
+            
             st.subheader("📝 Simulation Summary")
             
             if st.session_state.comparison_results is not None:
