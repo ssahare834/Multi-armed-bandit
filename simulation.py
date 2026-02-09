@@ -1,7 +1,3 @@
-"""
-Simulation Environment for Multi-Armed Bandit Recommendation System
-Simulates user interactions with news articles
-"""
 
 import numpy as np
 from typing import List, Dict, Tuple, Optional
@@ -15,8 +11,8 @@ class Article:
     id: int
     title: str
     category: str
-    true_ctr: float  # True click-through rate
-    topic_features: np.ndarray  # Feature vector for contextual bandits
+    true_ctr: float  
+    topic_features: np.ndarray  
 
 
 @dataclass
@@ -57,11 +53,10 @@ class NewsEnvironment:
         
         articles = []
         
-        # Generate CTRs with some structure
-        # A few high-performing articles, many medium, some low
-        ctrs = np.random.beta(2, 5, self.n_articles)  # Skewed distribution
-        ctrs = 0.05 + ctrs * 0.25  # Scale to 0.05-0.30 range
-        ctrs = np.sort(ctrs)[::-1]  # Sort descending
+       
+        ctrs = np.random.beta(2, 5, self.n_articles)  
+        ctrs = 0.05 + ctrs * 0.25  
+        ctrs = np.sort(ctrs)[::-1]  
         
         titles = [
             "Breaking: Major Policy Changes Announced",
@@ -85,7 +80,7 @@ class NewsEnvironment:
             category = categories[i % len(categories)]
             title = titles[i] if i < len(titles) else f"Article {i+1}: {category} News"
             
-            # Generate topic features (for contextual bandits)
+           
             topic_features = np.random.randn(5)
             topic_features = topic_features / np.linalg.norm(topic_features)
             
@@ -126,8 +121,7 @@ class NewsEnvironment:
                                                      size=min(3, len(categories)), 
                                                      replace=False))
         
-        # Generate user feature vector
-        # Features: [age_normalized, location_encoded, category_preferences...]
+      
         age_norm = age / 100.0
         location_encoded = locations.index(location) / len(locations)
         
@@ -156,13 +150,13 @@ class NewsEnvironment:
         article = self.articles[arm]
         base_ctr = article.true_ctr
         
-        # Boost CTR if article matches user preferences
+       
         if article.category in user.preferred_categories:
             boost = 0.1
         else:
             boost = 0.0
         
-        # Age-based preferences (example)
+        
         if user.age < 35 and article.category in ['Technology', 'Entertainment']:
             boost += 0.05
         elif user.age >= 55 and article.category in ['Health', 'Business']:
@@ -225,10 +219,10 @@ def run_simulation(algorithm, environment: NewsEnvironment,
     cumulative_reward = 0
     
     for t in range(n_rounds):
-        # Generate user (for contextual bandits)
+        
         user = environment.generate_user() if use_context else None
         
-        # Select arm
+        
         if use_context and hasattr(algorithm, 'select_arm'):
             if isinstance(algorithm, type(algorithm)) and hasattr(algorithm, 'n_features'):
                 # Contextual bandit
@@ -238,13 +232,13 @@ def run_simulation(algorithm, environment: NewsEnvironment,
         else:
             arm = algorithm.select_arm()
         
-        # Pull arm and observe reward
+      
         if use_context and user is not None:
             reward = environment.contextual_pull(arm, user)
         else:
             reward = environment.pull_arm(arm)
         
-        # Update algorithm
+       
         if use_context and hasattr(algorithm, 'update') and user is not None:
             if isinstance(algorithm, type(algorithm)) and hasattr(algorithm, 'n_features'):
                 algorithm.update(arm, user.feature_vector, reward)
@@ -253,16 +247,16 @@ def run_simulation(algorithm, environment: NewsEnvironment,
         else:
             algorithm.update(arm, reward)
         
-        # Record results
+       
         cumulative_reward += reward
         results['rewards'].append(reward)
         results['arms'].append(arm)
         
-        # Calculate current CTR
+       
         current_ctr = cumulative_reward / (t + 1)
         results['ctr_evolution'].append(current_ctr)
     
-    # Calculate regret
+  
     results['regret'] = environment.calculate_regret(results['arms'])
     
     return results
